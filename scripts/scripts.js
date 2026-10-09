@@ -66,6 +66,38 @@ function buildHeroBlock(main) {
   }
 }
 
+const LINK_IMAGE_PATH = /^\/adobe\/assets\/urn:aaid:aem:[^/]+\/as\/[^/]+\.(avif|webp|jpe?g|png|gif)$/i;
+
+function isLinkImage(a) {
+  if (a.dataset.editAs === 'image') return true;
+  if (a.textContent.trim() !== a.href) return false;
+  try {
+    return LINK_IMAGE_PATH.test(new URL(a.href).pathname);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Converts AEM Assets image links (<a href="src" title="alt">src</a>) into pictures.
+ * @param {Element} main The container element
+ */
+function decorateLinkImages(main) {
+  main.querySelectorAll('a[href]').forEach((a) => {
+    if (!isLinkImage(a)) return;
+    const picture = document.createElement('picture');
+    const img = document.createElement('img');
+    img.src = a.href;
+    img.alt = a.title || '';
+    img.loading = 'lazy';
+    [...a.attributes]
+      .filter(({ name }) => name === 'id' || (name.startsWith('data-') && name !== 'data-edit-as'))
+      .forEach(({ name, value }) => img.setAttribute(name, value));
+    picture.append(img);
+    a.replaceWith(picture);
+  });
+}
+
 /**
  * load fonts.css and set a session storage flag
  */
@@ -160,6 +192,7 @@ function decorateSections(main) {
  */
 // eslint-disable-next-line import/prefer-default-export
 export function decorateMain(main) {
+  decorateLinkImages(main);
   // hopefully forward compatible button decoration
   decorateButtons(main);
   decorateIcons(main);
