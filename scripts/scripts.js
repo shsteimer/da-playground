@@ -271,7 +271,7 @@ async function loadSidekick() {
   });
 }
 
-async function loadPage() {
+export async function loadPage() {
   await loadEager(document);
   await loadLazy(document);
   loadDelayed();
@@ -293,5 +293,8 @@ export const NX_ORIGIN = branch === 'local' || origin.includes('localhost') ? 'h
   }
   if (searchParams.get('daexperiment')) {
     import(`${NX_ORIGIN}/public/plugins/exp/exp.js`);
+  }
+  if (searchParams.has('quick-edit')) {
+    import('../tools/quick-edit/quick-edit.js').then(({ default: init }) => init());
   }
 }());
