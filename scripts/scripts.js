@@ -69,6 +69,14 @@ function buildHeroBlock(main) {
   }
 }
 
+export function isAssetsDeliveryUrl(src) {
+  try {
+    return /^delivery-p\d+-e\d+\.adobeaemcloud\.com$/.test(new URL(src).hostname);
+  } catch {
+    return false;
+  }
+}
+
 const LINK_IMAGE_PATH = /^\/adobe\/assets\/urn:aaid:aem:[^/]+\/as\/[^/]+\.(avif|webp|jpe?g|png|gif)$/i;
 
 function isLinkImage(a) {
