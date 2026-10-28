@@ -47,7 +47,10 @@ export function moveInstrumentation(from, to) {
     to,
     [...from.attributes]
       .map(({ nodeName }) => nodeName)
-      .filter((attr) => attr.startsWith('data-aue-') || attr.startsWith('data-richtext-')),
+      .filter((attr) => attr.startsWith('data-aue-')
+        || attr.startsWith('data-richtext-')
+        || attr.startsWith('data-image-')
+        || attr === 'data-edit-as'),
   );
 }
 
@@ -91,7 +94,7 @@ function decorateLinkImages(main) {
     img.alt = a.title || '';
     img.loading = 'lazy';
     [...a.attributes]
-      .filter(({ name }) => name === 'id' || (name.startsWith('data-') && name !== 'data-edit-as'))
+      .filter(({ name }) => name === 'id' || name.startsWith('data-'))
       .forEach(({ name, value }) => img.setAttribute(name, value));
     picture.append(img);
     a.replaceWith(picture);
