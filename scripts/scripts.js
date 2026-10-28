@@ -47,7 +47,9 @@ export function moveInstrumentation(from, to) {
     to,
     [...from.attributes]
       .map(({ nodeName }) => nodeName)
-      .filter((attr) => attr.startsWith('data-aue-') || attr.startsWith('data-richtext-')),
+      .filter((attr) => attr.startsWith('data-aue-')
+        || attr.startsWith('data-richtext-')
+        || attr.startsWith('data-image-')),
   );
 }
 
@@ -66,10 +68,17 @@ function buildHeroBlock(main) {
   }
 }
 
+export function isAssetsDeliveryUrl(src) {
+  try {
+    return /^delivery-p\d+-e\d+\.adobeaemcloud\.com$/.test(new URL(src).hostname);
+  } catch {
+    return false;
+  }
+}
+
 const LINK_IMAGE_PATH = /^\/adobe\/assets\/urn:aaid:aem:[^/]+\/as\/[^/]+\.(avif|webp|jpe?g|png|gif)$/i;
 
 function isLinkImage(a) {
-  if (a.dataset.editAs === 'image') return true;
   if (a.textContent.trim() !== a.href) return false;
   try {
     return LINK_IMAGE_PATH.test(new URL(a.href).pathname);
@@ -91,7 +100,7 @@ function decorateLinkImages(main) {
     img.alt = a.title || '';
     img.loading = 'lazy';
     [...a.attributes]
-      .filter(({ name }) => name === 'id' || (name.startsWith('data-') && name !== 'data-edit-as'))
+      .filter(({ name }) => name === 'id' || name.startsWith('data-'))
       .forEach(({ name, value }) => img.setAttribute(name, value));
     picture.append(img);
     a.replaceWith(picture);
