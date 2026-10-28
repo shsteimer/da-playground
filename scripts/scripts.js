@@ -49,8 +49,7 @@ export function moveInstrumentation(from, to) {
       .map(({ nodeName }) => nodeName)
       .filter((attr) => attr.startsWith('data-aue-')
         || attr.startsWith('data-richtext-')
-        || attr.startsWith('data-image-')
-        || attr === 'data-edit-as'),
+        || attr.startsWith('data-image-')),
   );
 }
 
@@ -80,7 +79,6 @@ export function isAssetsDeliveryUrl(src) {
 const LINK_IMAGE_PATH = /^\/adobe\/assets\/urn:aaid:aem:[^/]+\/as\/[^/]+\.(avif|webp|jpe?g|png|gif)$/i;
 
 function isLinkImage(a) {
-  if (a.dataset.editAs === 'image') return true;
   if (a.textContent.trim() !== a.href) return false;
   try {
     return LINK_IMAGE_PATH.test(new URL(a.href).pathname);
